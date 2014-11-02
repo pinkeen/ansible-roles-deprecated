@@ -1,0 +1,17 @@
+---
+- name: Setup sshd config
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    line: "{{ item.line|default(item) }}"
+    regexp: "#?\\s*{{ item.regexp|default(item) }}"
+    state: present
+  with_items:
+    - "RSAAuthentication yes"
+    - "PubkeyAuthentication yes"
+    - "PermitRootLogin yes"
+    - "PermitEmptyPasswords no"
+    - "TCPKeepAlive yes"
+    - "ClientAliveInterval 60"
+    - { line: "AuthorizedKeysFile .ssh/authorized_keys", regexp: "AuthorizedKeysFile\\s+.ssh/authorized_keys"}
+  notify:
+    - restart_sshd    

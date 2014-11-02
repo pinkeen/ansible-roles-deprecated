@@ -1,0 +1,28 @@
+[{{ pool_name }}]
+
+listen = /var/run/php-fpm/{{ pool_name }}.sock
+listen.backlog = -1
+listen.owner = {{ httpd_user }}
+listen.group = {{ httpd_user }}
+listen.mode = 0660
+
+user = {{ pool_user }}
+group = {{ pool_user }}
+
+pm = ondemand
+pm.max_children = 5
+pm.process_idle_timeout = 10s
+pm.max_requests = 500
+pm.start_servers = 1
+pm.status_path = /php-fpm-status
+security.limit_extensions = .php .php3 .php4 .php5
+
+;env[HOSTNAME] = $HOSTNAME
+;env[PATH] = /usr/local/bin:/usr/bin:/bin
+;env[TMP] = /tmp
+;env[TMPDIR] = /tmp
+;env[TEMP] = /tmp
+
+php_admin_value[error_log] = /var/log/php-fpm/www-error.log
+php_admin_flag[log_errors] = on
+php_admin_value[memory_limit] = 128M

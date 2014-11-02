@@ -1,0 +1,11 @@
+---
+- name: Install php-fpm package
+  yum: name=php-fpm state=present
+
+- name: Remove default www pool - we don't need that
+  file: 
+    name: /etc/php-fpm.d/www.conf
+    state: absent
+
+- name: Enable php-fpm service
+  service: name=php-fpm enabled=yes

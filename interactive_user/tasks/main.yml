@@ -1,0 +1,33 @@
+---
+- name: Install basic tools
+  yum: name="{{ item }}" state=present
+  with_items:
+    - zsh
+    - git
+    - nano
+    - mc
+    - wget
+    - nmap
+
+- name: Create user {{ username }}
+  user:
+    state: present
+    name: "{{ username }}"
+    generate_ssh_key: yes
+
+- name: Clone oh-my-zsh repo
+  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest="~{{ username }}/.oh-my-zsh" update=no
+
+- name: Copy .zshrc
+  copy: src=zshrc dest="~{{ username }}/.zshrc" owner="{{ username }}"
+
+- name: Set zsh as default shell
+  user: name="{{ username }}" shell=/bin/zsh
+
+- name: Copy ssh authorized key
+  authorized_key: user="{{ username }}" key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  when: install_ssh_key|default(true)
+
+- name: Add to wheel group
+  user: name="{{ username }}" groups=wheel append=yes
+  when: superuser|default(false)

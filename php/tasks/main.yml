@@ -1,0 +1,59 @@
+---
+- name: Install remi repository
+  yum: name="http://rpms.famillecollet.com/enterprise/remi-release-7.rpm" state=present
+
+- name: Enable remi repository
+  ini_file: 
+    dest: /etc/yum.repos.d/remi.repo
+    section: "{{ item }}"
+    option: enabled
+    value: 1
+  with_items:
+    - remi
+    - remi-php56
+
+- name: Install php packages
+  yum: 
+    name: "{{ item }}" 
+    state: present
+  with_items:
+    - php
+    - php-cli
+    - php-common
+    - php-dba
+    - php-devel
+    - php-gd
+    - php-intl
+    - php-magickwand
+    - php-mbstring
+    - php-mcrypt
+    - php-mysqlnd
+    - php-pdo
+    - php-pear
+    - php-pecl-apc
+    - php-pecl-jsonc
+    - php-pecl-jsonc-devel
+    - php-pgsql
+    - php-process
+    - php-twig-ctwig
+    - php-xml
+    - php-opcache
+
+- name: Configure php
+  ini_file: 
+    dest: /etc/php.ini 
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    backup: yes
+  with_items:
+    - { section: "PHP", option: "date.timezone", value: "{{ php_timezone|default('Europe/Warsaw') }}" }
+    - { section: "PHP", option: "memory_limit", value: "{{ php_memorylimit|default('64M') }}" }
+    - { section: "PHP", option: "realpath_cache_size", value: "5000k" }
+    - { section: "PHP", option: "realpath_cache_ttl", value: "200" }
+    - { section: "PHP", option: "upload_max_filesize", value: "30M" }
+    - { section: "PHP", option: "post_max_size", value: "35M" }
+    - { section: "PHP", option: "error_reporting", value: "E_ALL & ~E_DEPRECATED & ~E_STRICT" }
+
+
+

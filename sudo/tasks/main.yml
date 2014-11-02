@@ -1,0 +1,11 @@
+---
+- name: Install sudo package
+  yum: name=sudo state=present
+
+- name: Allow wheel group to do anything without password
+  lineinfile: 
+    line: "%wheel ALL=(ALL) NOPASSWD:ALL" 
+    regexp: "^\\s*%wheel\\s+ALL\\s*="
+    dest: /etc/sudoers
+    state: present
+    validate: "visudo -cf %s"
