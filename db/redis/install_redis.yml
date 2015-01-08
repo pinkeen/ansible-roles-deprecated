@@ -1,0 +1,40 @@
+- name: get epel repo
+  shell: >
+    wget -r --no-parent -A 'epel-release-*.rpm' http://dl.fedoraproject.org/pub/epel/7/x86_64/e/;
+
+- name: add epel repo to yum
+  shell: >
+    rpm -Uvh dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-*.rpm --replacepkgs;
+  sudo: yes
+
+- name: disable huge pages
+  shell: >
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+  sudo: yes
+
+- name: disable huge pages in rc.local
+  lineinfile: dest=/etc/rc.local regexp="^echo never " line="echo never > /sys/kernel/mm/transparent_hugepage/enabled"
+
+- name: enable overcommit
+  lineinfile: dest=/etc/sysctl.conf regexp="^vm.overcommit " line="vm.overcommit_memory=1"
+
+- name: apply overcommit
+  shell: >
+    sysctl vm.overcommit_memory=1;
+  sudo: yes
+
+- name: Install redis
+  yum: name={{ item }} state=present
+  with_items:
+   - redis
+  notify: restart redis
+
+- name: clear epel repo files
+  shell: >
+    rm -rf dl.fedoraproject.org
+
+- name: add redis to runtime
+  shell: >
+    chkconfig --add redis;
+    chkconfig --level 35 redis on
+  sudo: yes
