@@ -8,6 +8,8 @@
     - mc
     - wget
     - nmap
+    - curl
+    - bind-utils
 
 - name: Create user {{ username }}
   user:

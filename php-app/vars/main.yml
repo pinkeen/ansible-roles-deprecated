@@ -1,0 +1,9 @@
+---
+nginx_web_dir: "/var/www"
+nginx_log_dir: "/var/log/nginx"
+nginx_app_log_dir: "{{ nginx_log_dir }}/{{ app_name }}"
+app_home: "{{ nginx_web_dir }}/{{ app_name }}"
+app_user: "{{ app_name }}"
+app_log_dir: "{{ app_home }}/{{ app_relative_log_dir }}"
+app_web_dir: "{{ app_home }}/{{ app_relative_web_dir }}"
+app_sock: "/var/run/php-fpm/{{ app_name }}.sock"

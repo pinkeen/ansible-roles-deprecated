@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ app_name }}</title>
+        <style>
+            body {
+                background: #272822;
+                color: #fff;
+                font-family: monospace;
+                margin: 5%;
+            }
+            
+            strong {
+                color: #499E2C;
+            }
+            
+            h1 {
+                color: #DE2668;
+            }
+            
+            em {
+                font-style: normal;
+                color: #60C7C8;
+            }
+            
+            a {
+                color: #9D77DF;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Hello, the app <strong>{{ app_name }}</strong> is working!</h1>
+        <h2>Ansible config</h2>
+        <p>
+            <em>app_name</em>: {{ app_name }}<br/>
+            <em>app_user</em>: {{ app_user }}<br/>
+            <em>app_home</em>: {{ app_home }}<br/>
+            <em>app_log_dir</em>: {{ nginx_app_log_dir }} &rarr; {{ app_log_dir }}<br/>
+            <em>app_web_dir</em>: {{ app_web_dir }}<br/>
+            <em>app_hostnames</em>: {{ app_hostnames }}<br/>
+        </p>
+        <h2>FastCGI</h2>
+        <p>
+            <em>$_SERVER</em>:
+            <ul>
+                <?php foreach($_SERVER as $name => $value): ?>
+                <li><em><?php echo $name; ?></em>: <?php echo $value; ?></li>
+                <?php endforeach; ?>
+             </ul>
+        </p>
+        <small>Hush, the magic string is: 11fc14167367c5ff567438a1624a3956.</small>
+    </body>
+</html>

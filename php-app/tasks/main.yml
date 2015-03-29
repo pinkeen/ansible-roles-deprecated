@@ -1,0 +1,54 @@
+---
+- name: Create app user 
+  user:
+    state: present
+    name: "{{ app_user }}"
+    home: "{{ app_home }}"
+    group: "nginx"
+    createhome: yes
+    generate_ssh_key: yes
+
+- name: Create app directories
+  file: 
+    path: "{{ item }}"
+    owner: "{{ app_user }}"
+    group: "nginx"
+    mode: 0750
+    state: directory
+  with_items:
+    - "{{ app_log_dir }}"
+    - "{{ app_web_dir }}"
+
+- name: Create nginx directories
+  file: 
+    path: "{{ item }}"
+    owner: "nginx"
+    group: "nginx"
+    mode: 0750
+    state: directory
+  with_items:
+    - "{{ nginx_app_log_dir }}"
+
+- name: Create ngixn logs symlink
+  file: 
+    src: "{{ nginx_app_log_dir }}"
+    dest: "{{ app_log_dir }}/nginx"
+    owner: "{{ app_user }}"
+    group: "nginx"
+    mode: 0770
+    state: link
+
+- name: Create php-fpm pool
+  include: pool.yml    
+   
+- name: Copy default index file 
+  template: 
+    src: index.php.j2 
+    dest: "{{ app_web_dir }}/index.php"
+    owner: "{{ app_user }}"
+    group: "nginx"
+  notify: Reload nginx       
+    
+- name: Install nginx site configuration file
+  template: src=nginx-site.conf.j2 dest=/etc/nginx/conf.d/{{ app_name }}.conf
+  notify: Reload nginx      

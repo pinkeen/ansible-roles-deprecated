@@ -1,4 +1,7 @@
 ---
+- name: Install nginx-release repository
+  yum: name="http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm" state=present
+
 - name: Install nginx package
   yum: name="{{ item }}" state=present
   with_items:
@@ -11,10 +14,26 @@
 - name: Install nginx configuration file
   copy: src=nginx.conf dest=/etc/nginx/nginx.conf
   notify: reload_nginx  
+  
+- name: Install nginx generic reusable configuration includes
+  copy: src="includes/{{ item }}" dest=/etc/nginx/
+  notify: reload_nginx    
+  with_items:
+    - common
+    - media
 
 - name: Open http and https ports in firewall
   firewalld: service="{{ item }}" zone=public permanent=true state=enabled
   with_items: ['http', 'https']
   notify: reload_firewalld
 
+- name: Create www directory
+  file: 
+    path: "/var/www"
+    owner: "nginx"
+    group: "nginx"
+    mode: 0750
+    state: directory
+  with_items:
+    - "/var/www"
 

@@ -1,0 +1,16 @@
+---
+- name: Create user 
+  user:
+    state: present
+    name: "{{ app_user }}"
+    home: "{{ app_home }}"
+    createhome: yes
+
+- name: Install pool config
+  template:
+    src: pool.conf.j2
+    dest: /etc/php-fpm.d/{{ app_name }}.conf
+  notify: Restart php-fpm
+ 
+
+  

@@ -1,0 +1,6 @@
+location ~* ^.+\.(jpg|jpeg|gif|png|ico|css|zip|tgz|gz|rar|bz2|doc|xls|exe|pdf|ppt|txt|tar|mid|midi|wav|bmp|rtf|js|mov|mpg|mpeg|mp4|docx|pptx|xlsx) 
+{
+    access_log off; 
+    expires max; 
+    log_not_found off;
+}

@@ -1,0 +1,4 @@
+---
+app_relative_log_dir: "logs"
+app_relative_web_dir: "web"
+
