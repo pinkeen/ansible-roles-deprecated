@@ -1,0 +1,7 @@
+---
+php_ci_app_name: php_ci
+php_ci_admin_name: admin
+php_ci_admin_email: root@localhost
+php_ci_admin_pass: admin123
+    
+

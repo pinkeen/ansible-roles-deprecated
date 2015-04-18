@@ -1,5 +1,0 @@
----
-httpd_user: nginx
-pool_user: "{{ pool_name }}"
-pool_home: "/var/www/{{ pool_user }}"
-pool_log_dir: "{{ pool_home }}/logs"

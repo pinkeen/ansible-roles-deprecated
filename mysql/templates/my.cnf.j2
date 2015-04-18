@@ -1,0 +1,19 @@
+[client]
+socket = /var/lib/mysql/mysql.sock
+
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+symbolic-links=0
+port=3306
+
+{% if mysql_skip_networking %}
+skip-networking
+{% else %}
+bind-address=0.0.0.0
+{% endif %}
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid

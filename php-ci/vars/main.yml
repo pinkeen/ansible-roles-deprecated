@@ -1,0 +1,2 @@
+---
+php_ci_app_dir: "~{{ php_ci_app_name }}/application"

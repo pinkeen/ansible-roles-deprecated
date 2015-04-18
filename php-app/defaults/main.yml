@@ -1,4 +1,6 @@
 ---
 app_relative_log_dir: "logs"
 app_relative_web_dir: "web"
+app_init_web_dir: true
+app_rewrite_to: false
 

@@ -8,7 +8,7 @@
     createhome: yes
     generate_ssh_key: yes
 
-- name: Create app directories
+- name: Ensure dirs
   file: 
     path: "{{ item }}"
     owner: "{{ app_user }}"
@@ -16,8 +16,17 @@
     mode: 0750
     state: directory
   with_items:
+    - "{{ app_home }}"
     - "{{ app_log_dir }}"
-    - "{{ app_web_dir }}"
+
+- name: Create app web dir
+  file: 
+    path: "{{ app_web_dir }}"
+    owner: "{{ app_user }}"
+    group: "nginx"
+    mode: 0750
+    state: directory
+  when: app_init_web_dir    
 
 - name: Create nginx directories
   file: 
@@ -29,7 +38,7 @@
   with_items:
     - "{{ nginx_app_log_dir }}"
 
-- name: Create ngixn logs symlink
+- name: Create nginx logs symlink
   file: 
     src: "{{ nginx_app_log_dir }}"
     dest: "{{ app_log_dir }}/nginx"
@@ -47,6 +56,7 @@
     dest: "{{ app_web_dir }}/index.php"
     owner: "{{ app_user }}"
     group: "nginx"
+  when: app_init_web_dir
   notify: Reload nginx       
     
 - name: Install nginx site configuration file

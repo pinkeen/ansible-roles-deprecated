@@ -9,10 +9,23 @@ server
     
     root {{ app_web_dir }};
     
-    index index.php;
-
     include common;
     include media;
+
+{% if app_rewrite_to %}
+    rewrite ^/{{ app_rewrite_to }}/?(.*)$ /$1 permanent;
+
+    location / {
+        index {{ app_rewrite_to }};
+        try_files $uri @rewriteapp;
+    }
+ 
+    location @rewriteapp {
+        rewrite ^(.*)$ /{{ app_rewrite_to }}/$1 last;
+    }
+{% else %}    
+    index index.php;
+{% endif %}
     
     location ~ [^/]\.php(/|$) {
         try_files $uri =404;

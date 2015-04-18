@@ -1,0 +1,4 @@
+---
+composer_install_dir: /usr/local/bin
+composer_user: root
+composer_group: root

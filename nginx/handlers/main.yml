@@ -1,9 +1,9 @@
 ---
-- name: reload_nginx
+- name: Reload nginx
   service: name=nginx state=reloaded
 
-- name: restart_nginx
+- name: Restart nginx
   service: name=nginx state=restarted
 
-- name: reload_firewalld
+- name: Reload firewalld
   shell: firewall-cmd --reload

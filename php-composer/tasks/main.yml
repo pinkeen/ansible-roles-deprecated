@@ -1,0 +1,13 @@
+---
+- name: Install composer
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir={{ composer_install_dir }} --filename=composer
+  args:
+    creates: "{{ composer_install_dir }}/composer"
+
+- name: Ensure permissions
+  file:     
+    path: "{{ composer_install_dir }}/composer"
+    owner: "{{ composer_user }}" 
+    group: "{{ composer_group }}"
+    state: file
+    mode: 0755

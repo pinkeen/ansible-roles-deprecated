@@ -13,11 +13,11 @@
 
 - name: Install nginx configuration file
   copy: src=nginx.conf dest=/etc/nginx/nginx.conf
-  notify: reload_nginx  
+  notify: Reload nginx  
   
 - name: Install nginx generic reusable configuration includes
   copy: src="includes/{{ item }}" dest=/etc/nginx/
-  notify: reload_nginx    
+  notify: Reload nginx    
   with_items:
     - common
     - media
@@ -25,7 +25,7 @@
 - name: Open http and https ports in firewall
   firewalld: service="{{ item }}" zone=public permanent=true state=enabled
   with_items: ['http', 'https']
-  notify: reload_firewalld
+  notify: Reload firewalld
 
 - name: Create www directory
   file: 

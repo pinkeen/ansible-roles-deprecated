@@ -1,0 +1,19 @@
+---
+- name: Install mysqld package
+  yum: name={{ item }} enablerepo=remi state=installed
+  with_items:
+    - mariadb-server
+    - MySQL-python
+
+- name: Install mysqld config
+  template: src=my.cnf.j2 dest=/etc/my.cnf.d/server.cnf
+  notify: 
+    - Restart mysql
+
+- name: Start and enable mysqld service
+  service: name=mariadb state=started enabled=true
+
+- name: Open http and https ports in firewall
+  firewalld: service="mysql" zone=public permanent=true state=enabled
+  when: mysql_open_to_world
+  notify: Reload firewalld

@@ -1,0 +1,12 @@
+---
+- name: Create databases
+  mysql_db: 
+    name: "{{ item.name }}" 
+    state: present 
+    collation: utf8_general_ci
+    encoding: utf8
+  with_items: mysql_databases
+
+- name: Create database user
+  mysql_user: name={{ item.username }} password={{ item.password }} priv="{{ item.name }}.*:ALL" host={{ item.host|default('localhost') }} state=present
+  with_items: mysql_databases
