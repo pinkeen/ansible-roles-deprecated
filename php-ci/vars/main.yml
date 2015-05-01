@@ -1,2 +1,5 @@
 ---
-phpci_app_dir: "~{{ phpci_app_name }}/application"
+phpci_app_name: phpci
+phpci_home_dir: "/var/www/{{ phpci_app_name }}"
+phpci_app_dir: "{{ phpci_home_dir }}/application"
+

@@ -1,0 +1,12 @@
+[Unit]
+Description=Runs phpci builds
+After=mariadb.service
+
+[Service]
+Type=simple
+ExecStart={{ phpci_app_dir }}/daemonise phpci:daemonise
+Environment=/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:{{ phpci_home_dir }}/.local/bin:{{ phpci_home_dir }}/bin
+User={{ phpci_app_name }}
+
+[Install]
+WantedBy=multi-user.target

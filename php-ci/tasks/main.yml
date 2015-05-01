@@ -2,7 +2,7 @@
 - name: Install php-ci using composer
   command: /usr/local/bin/composer create-project block8/phpci application --keep-vcs --no-dev
   args:
-    chdir: "~{{ phpci_app_name }}"
+    chdir: "{{ phpci_home_dir }}"
     creates: "{{ phpci_app_dir }}/console"
   sudo: yes
   sudo_user: "{{ phpci_app_name }}"
@@ -17,7 +17,7 @@
 - name: Symlink log directory
   file:
     src: "{{ phpci_app_dir }}/logs"
-    path: "~{{ phpci_app_name }}/logs/phpci" 
+    path: "{{ phpci_home_dir }}/logs/phpci" 
     state: link
   sudo: yes
   sudo_user: "{{ phpci_app_name }}"
@@ -87,14 +87,10 @@
   sudo: yes
   sudo_user: "{{ phpci_app_name }}"
 
-- name: Create build cron
-  cron:
-    user: "{{ phpci_app_name }}"
-    job: "/usr/bin/php {{ phpci_app_dir }}/console phpci:run-builds"
-    minute: "*"
-    hour: "*"
-    day: "*"
-    weekday: "*"
-    month: "*"
-    name: "{{ phpci_app_name }}_run_builds"
-    state: present
+- name: Install phpci build daemon service file
+  template: 
+    src: phpci.service
+    dest: /etc/systemd/system
+
+- name: Start and enable build daemon
+  service: name=phpci state=started enabled=yes

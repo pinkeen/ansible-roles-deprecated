@@ -1,5 +1,4 @@
 ---
-phpci_app_name: phpci
 phpci_admin_name: admin
 phpci_admin_email: "root@{{ phpci_hostname }}"
 phpci_admin_pass: admin123
