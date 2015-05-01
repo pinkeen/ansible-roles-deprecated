@@ -1,0 +1,70 @@
+---
+- name: Install php-ci using composer
+  command: /usr/local/bin/composer create-project block8/phpci application --keep-vcs --no-dev
+  args:
+    chdir: "~{{ phpci_app_name }}"
+    creates: "{{ phpci_app_dir }}/console"
+
+- name: Create log directory
+  file: 
+    path: "{{ phpci_app_dir }}/logs"
+    state: directory
+
+- name: Symlink log directory
+  file:
+    src: "{{ phpci_app_dir }}/logs"
+    path: "~{{ phpci_app_name }}/logs/phpci" 
+    state: link
+
+- name: Copy logger config
+  copy: 
+    src: "loggerconfig.php"
+    dest: "{{ phpci_app_dir }}/loggerconfig.php"
+
+- name: Install php-ci composer deps
+  command: /usr/local/bin/composer install 
+           --no-scripts 
+           --no-dev 
+           --optimize-autoloader 
+           --prefer-dist 
+           --no-progress 
+           --no-interaction
+  args: 
+    chdir: "{{ phpci_app_dir }}"
+
+- name: Install extra composer packages
+  command: /usr/local/bin/composer require
+           --update-no-dev
+           --no-progress
+           --no-interaction
+           --prefer-dist
+           {{ phpci_extra_packages|join(' ') }}
+  args:
+    chdir: "{{ phpci_app_dir }}"
+
+- name: Ensure executables
+  file:
+    path: "{{ phpci_app_dir }}/{{ item }}"
+    mode: 0755
+  with_items:
+    - console
+    - daemonise
+  
+- name: Setup php-ci
+  command: ./console phpci:install
+           --db-host "localhost" 
+           --db-name "{{ phpci_app_name }}" 
+           --db-user "{{ phpci_app_name }}" 
+           --db-pass "{{ phpci_db_pass }}"
+           --admin-name "{{ phpci_admin_name }}"
+           --admin-pass "{{ phpci_admin_pass }}"
+           --admin-mail "{{ phpci_admin_email }}"
+           --url "http://{{ phpci_hostname }}/"
+  args:
+    chdir: "{{ phpci_app_dir }}"
+    creates: "{{ phpci_app_dir }}/PHPCI/config.yml"
+
+- name: Create php-ci db schema
+  command: ./console phpci:update
+  args: 
+    chdir: "{{ phpci_app_dir }}"

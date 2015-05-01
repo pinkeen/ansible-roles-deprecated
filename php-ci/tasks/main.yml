@@ -1,47 +1,17 @@
 ---
-- name: Install php-ci using composer
-  command: /usr/local/bin/composer create-project block8/phpci application --keep-vcs --no-dev
-  args:
-    chdir: "~{{ php_ci_app_name }}"
-    creates: "{{ php_ci_app_dir }}/console"
+- name: Install and configure phpci (as user)
+  include: as_user.yml
   sudo: yes
-  sudo_user: "{{ php_ci_app_name }}"
-
-- name: Install php-ci composer deps
-  command: /usr/local/bin/composer install --no-scripts --no-dev --optimize-autoloader --prefer-dist --no-progress --no-interaction
-  args: 
-    chdir: "{{ php_ci_app_dir }}"
-  sudo: yes
-  sudo_user: "{{ php_ci_app_name }}"
-
-- name: Install php-ci config
-  template: 
-    src: config.yml 
-    dest: "{{ php_ci_app_dir }}/PHPCI/config.yml"
-  sudo: yes
-  sudo_user: "{{ php_ci_app_name }}"
-
-- name: Create php-ci db schema
-  command: ./console phpci:update
-  args: 
-    chdir: "{{ php_ci_app_dir }}"
-  sudo: yes
-  sudo_user: "{{ php_ci_app_name }}"
-
-- name: Install expect
-  yum: name=expect state=present
-
-- name: Create admin user
-  script: create_admin.expect "{{ php_ci_app_dir }}/console" "{{ php_ci_admin_email }}" "{{ php_ci_admin_name }}" "{{ php_ci_admin_pass }}"
+  sudo_user: "{{ phpci_app_name }}"
 
 - name: Create build cron
   cron:
-    user: "{{ php_ci_app_name }}"
-    job: "/usr/bin/php {{ php_ci_app_dir }}/console phpci:run-builds"
+    user: "{{ phpci_app_name }}"
+    job: "/usr/bin/php {{ phpci_app_dir }}/console phpci:run-builds"
     minute: "*"
     hour: "*"
     day: "*"
     weekday: "*"
     month: "*"
-    name: "{{ php_ci_app_name }}_run_builds"
+    name: "{{ phpci_app_name }}_run_builds"
     state: present

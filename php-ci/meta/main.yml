@@ -2,15 +2,15 @@
 dependencies:
     - role: php-composer
     - role: php-app
-      app_name: "{{ php_ci_app_name }}"
-      app_hostnames: "{{ php_ci_hostname }}"
+      app_name: "{{ phpci_app_name }}"
+      app_hostnames: "{{ phpci_hostname }}"
       app_relative_web_dir: "application/public"
       app_init_web_dir: false
       app_rewrite_to: index.php
     - role: mysql-databases
       mysql_databases:
-        - username: "{{ php_ci_app_name }}"
-          password: "{{ php_ci_db_pass }}"
-          name: "{{ php_ci_app_name }}"
+        - username: "{{ phpci_app_name }}"
+          password: "{{ phpci_db_pass }}"
+          name: "{{ phpci_app_name }}"
 
       

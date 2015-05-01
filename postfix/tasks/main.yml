@@ -1,0 +1,9 @@
+---
+- name: Install postfix pacakges
+  yum: name="{{ item }}" state=present
+  with_items:
+    - postfix
+    - cyrus-sasl-plain
+
+- name: Start and enable postfix
+  service: name=postfix state=started enabled=yes

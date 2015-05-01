@@ -1,7 +1,22 @@
 ---
-php_ci_app_name: php_ci
-php_ci_admin_name: admin
-php_ci_admin_email: root@localhost
-php_ci_admin_pass: admin123
+phpci_app_name: phpci
+phpci_admin_name: admin
+phpci_admin_email: "root@{{ phpci_hostname }}"
+phpci_admin_pass: admin123
+phpci_extra_packages:
+    - block8/php-docblock-checker
+    - phpmd/phpmd
+    - sebastian/phpcpd
+    - squizlabs/php_codesniffer
+    - phpspec/phpspec
+    - fabpot/php-cs-fixer
+    - phploc/phploc
+    - atoum/atoum
+    - jakub-onderka/php-parallel-lint
+    - behat/behat
+    - hipchat/hipchat-php
+    - phptal/phptal
+    - maknz/slack
+
     
 

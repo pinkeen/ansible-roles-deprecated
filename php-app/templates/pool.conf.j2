@@ -16,12 +16,12 @@ pm.start_servers = 1
 pm.status_path = /php-fpm-status
 security.limit_extensions = .php
 
-;env[HOSTNAME] = $HOSTNAME
-;env[PATH] = /usr/local/bin:/usr/bin:/bin
-;env[TMP] = /tmp
-;env[TMPDIR] = /tmp
-;env[TEMP] = /tmp
+env[HOSTNAME] = $HOSTNAME
+env[PATH] = /usr/local/bin:/usr/bin:/bin
+env[TMP] = /tmp
+env[TMPDIR] = /tmp
+env[TEMP] = /tmp
 
-php_admin_value[error_log] = {{ app_log_dir }}/php-fpm.error.log
+php_admin_value[error_log] = {{ app_log_dir }}/php-fpm/error.log
 php_admin_flag[log_errors] = on
 php_admin_value[memory_limit] = 128M

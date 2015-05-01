@@ -18,6 +18,7 @@
   with_items:
     - "{{ app_home }}"
     - "{{ app_log_dir }}"
+    - "{{ app_log_dir }}/php-fpm"
 
 - name: Create app web dir
   file: 
