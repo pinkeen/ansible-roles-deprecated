@@ -1,9 +1,6 @@
 ---
-- name: Install php-ci using composer
-  command: /usr/local/bin/composer create-project block8/phpci application --keep-vcs --no-dev
-  args:
-    chdir: "{{ phpci_home_dir }}"
-    creates: "{{ phpci_app_dir }}/console"
+- name: Install php-ci from git
+  git: repo=https://github.com/Block8/PHPCI.git dest="{{ phpci_app_dir }}" update=no accept_hostkey=True
   sudo: yes
   sudo_user: "{{ phpci_app_name }}"
 

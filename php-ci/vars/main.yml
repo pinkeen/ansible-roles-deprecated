@@ -1,5 +1,5 @@
 ---
 phpci_app_name: phpci
-phpci_home_dir: "/var/www/{{ phpci_app_name }}"
+phpci_home_dir: "{{ nginx_web_dir }}/{{ phpci_app_name }}"
 phpci_app_dir: "{{ phpci_home_dir }}/application"
 
