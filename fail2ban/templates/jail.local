@@ -1,0 +1,7 @@
+[DEFAULT]
+maxretry = "{{ f2b_max_retry }}"
+bantime = "{{ f2b_ban_time }}"
+findtime = 1500
+
+[sshd]
+enabled = true

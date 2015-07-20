@@ -1,0 +1,16 @@
+---
+- name: Install fail2ban
+  yum: name={{ item }} enablerepo=remi state=installed
+  with_items:
+    - fail2ban-server
+    - fail2ban-firewalld
+
+- name: Install fail2ban config
+  template: 
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+  notify: Restart fail2ban    
+
+- name: Start and enable fail2ban
+  service: name=fail2ban state=started enabled=yes    
+
