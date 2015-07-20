@@ -1,0 +1,153 @@
+---
+- name: Create user
+  user:
+    state: present
+    name: "{{ seafile_user }}"
+    home: "{{ seafile_home }}"
+
+- name: Create  dbs
+  mysql_db: 
+    name: "{{ item }}" 
+    state: present 
+    collation: utf8_general_ci
+    encoding: utf8
+  with_items: "{{ seafile_db_names }}"
+
+- name: Create db user
+  mysql_user: 
+    name: "{{ seafile_user }}" 
+    password: "{{ seafile_db_pass }}" 
+    priv: "{{ item }}.*:ALL" 
+    host: localhost
+    state: present
+    append_privs: yes
+  with_items: "{{ seafile_db_names }}"    
+
+- name: Install dependencies
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python
+    - python-setuptools
+    - MySQL-python
+    - python-pillow
+
+- name: Download tarball
+  get_url:
+    url: "{{ seafile_tarball }}"
+    dest: "{{ seafile_home }}/seafile-server-{{ seafile_version }}.tar.gz"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"    
+
+- name: Unpack seafile
+  unarchive:
+    src: "{{ seafile_home }}/seafile-server-{{ seafile_version }}.tar.gz"
+    dest: "{{ seafile_home }}"
+    creates: "{{ seafile_install_dir }}"
+    copy: no
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"
+
+- name: Link latest version
+  file:
+    src: "{{ seafile_install_dir }}"
+    dest: "{{ seafile_latest_dir }}"
+    state: link
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"
+
+- name: Initialize seafile database
+  shell: > 
+    /bin/mysql "{{ seafile_seahub_db_name }}" -u"{{ seafile_user }}" -p"{{ seafile_db_pass }}" < "{{ seafile_seahub_db_sql }}" && echo "do not remove" > "{{ seafile_home }}/seahub_schema.lock"
+  args:
+    creates: "{{ seafile_home }}/seahub_schema.lock"
+
+- name: Init ccnet
+  shell: >
+    {{ seafile_ccnet_init }} 
+    --config-dir {{ seafile_ccnet_config_dir }}
+    --name {{ seafile_server_name }}
+    --host {{ seafile_server_domain }}
+    --port {{ seafile_ccnet_port }}
+  args:
+    creates: "{{ seafile_ccnet_config }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"    
+
+- name: Configure db in ccnet ini file
+  ini_file:
+    dest: "{{ seafile_ccnet_config }}"
+    section: Database
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: "ENGINE", value: "mysql" } 
+    - { option: "HOST", value: "127.0.0.1" } 
+    - { option: "PORT", value: "3306" } 
+    - { option: "USER", value: "{{ seafile_user }}" } 
+    - { option: "PASSWD", value: "{{ seafile_db_pass }}" } 
+    - { option: "DB", value: "{{ seafile_ccnet_db_name }}" } 
+    - { option: "CONNECTION_CHARSET", value: "utf8" } 
+
+- name: Init server
+  shell: >
+    {{ seafile_server_init }} 
+    --seafile-dir {{ seafile_data_dir }}
+    --port {{ seafile_port }}
+    --fileserver-port {{ seafile_fileserver_port }}
+  args:
+    creates: "{{ seafile_server_config }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}" 
+
+- name: Configure db in server ini file
+  ini_file:
+    dest: "{{ seafile_server_config }}"
+    section: Database
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { option: "type", value: "mysql" } 
+    - { option: "host", value: "127.0.0.1" } 
+    - { option: "port", value: "3306" } 
+    - { option: "user", value: "{{ seafile_user }}" } 
+    - { option: "password", value: "{{ seafile_db_pass }}" } 
+    - { option: "db_name", value: "{{ seafile_seafile_db_name }}" } 
+    - { option: "connection_charset", value: "utf8" }   
+
+- name: Configure seafile datadir in ccnet seafile.ini
+  shell: echo "{{ seafile_data_dir }}" > "{{ seafile_inifile }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"   
+
+- name: Install seahub config 
+  template: 
+    src: seahub_settings.py
+    dest: "{{ seafile_seahub_settings }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}" 
+
+- name: Copy default avatars
+  shell: >
+    mv "{{ seafile_orig_avatar_dir }}" "{{ seafile_dest_avatar_dir }}"
+  args:
+    creates: "{{ seafile_default_avatar }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"      
+
+- name: Symlink avatar dir
+  file:
+    src: "{{ seafile_dest_avatar_dir }}"
+    dest: "{{ seafile_orig_avatar_dir }}"
+    state: link
+    force: yes
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"  
+
+# TODO: 
+# - Open firewall ports for seafile
+# - Check how to enable WebDAV and check if it's working
+# - Configure admin user
+# - Use nginx as proxy for seahub
+# - Create and enable systemd service files

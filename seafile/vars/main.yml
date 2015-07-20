@@ -1,0 +1,27 @@
+---
+seafile_latest_dir: "{{ seafile_home }}/seafile-server-latest"
+seafile_install_dir: "{{ seafile_home }}/seafile-server-{{ seafile_version }}"
+
+seafile_seahub_db_sql: "{{ seafile_install_dir }}/seahub/sql/mysql.sql"
+
+seafile_lib_path: "{{ seafile_install_dir }}/seafile/lib:{{ seafile_install_dir }}/seafile/lib64"
+
+seafile_ccnet_init: "LD_LIBRARY_PATH={{ seafile_lib_path }} {{ seafile_install_dir }}/seafile/bin/ccnet-init"
+seafile_ccnet_config_dir: "{{ seafile_home }}/ccnet"
+seafile_inifile: "{{ seafile_ccnet_config_dir }}/seafile.ini"
+seafile_ccnet_config: "{{ seafile_ccnet_config_dir }}/ccnet.conf"
+
+seafile_server_init: "LD_LIBRARY_PATH={{ seafile_lib_path }} {{ seafile_install_dir }}/seafile/bin/seaf-server-init"
+seafile_server_config: "{{ seafile_data_dir }}/seafile.conf"
+
+seafile_seahub_settings: "{{ seafile_home }}/seahub_settings.py"
+
+seafile_orig_avatar_dir: "{{ seafile_install_dir }}/seahub/media/avatars"
+seafile_dest_avatar_dir: "{{ seafile_data_dir }}/avatars"
+
+seafile_default_avatar: "{{ seafile_dest_avatar_dir }}/default.png" # Used for avatar installation check
+
+seafile_db_names:
+    - "{{ seafile_seahub_db_name }}"
+    - "{{ seafile_ccnet_db_name }}"
+    - "{{ seafile_seafile_db_name }}"
