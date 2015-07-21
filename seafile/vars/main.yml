@@ -1,12 +1,18 @@
 ---
 seafile_latest_dir: "{{ seafile_home }}/seafile-server-latest"
 seafile_install_dir: "{{ seafile_home }}/seafile-server-{{ seafile_version }}"
+seafile_log_dir: "{{ seafile_home }}/logs"
+seafile_pid_dir: "{{ seafile_home }}/pids"
 
 seafile_seahub_db_sql: "{{ seafile_install_dir }}/seahub/sql/mysql.sql"
 
 seafile_lib_path: "{{ seafile_install_dir }}/seafile/lib:{{ seafile_install_dir }}/seafile/lib64"
+seafile_python_path: "PYTHONPATH={{ seafile_install_dir }}/seafile/lib/python2.6/site-packages:{{ seafile_install_dir }}/seafile/lib64/python2.6/site-packages:{{ seafile_install_dir }}/seahub/thirdpart:{{ seafile_install_dir }}/seafile/lib/python2.7/site-packages:{{ seafile_install_dir }}/seafile/lib64/python2.7/site-packages:$PYTHONPATH"
 
 seafile_ccnet_init: "LD_LIBRARY_PATH={{ seafile_lib_path }} {{ seafile_install_dir }}/seafile/bin/ccnet-init"
+
+seafile_config_dir: "{{ seafile_home }}/conf"
+seafile_seafdav_config: "{{ seafile_config_dir }}/seafdav.conf"
 seafile_ccnet_config_dir: "{{ seafile_home }}/ccnet"
 seafile_inifile: "{{ seafile_ccnet_config_dir }}/seafile.ini"
 seafile_ccnet_config: "{{ seafile_ccnet_config_dir }}/ccnet.conf"
@@ -16,10 +22,19 @@ seafile_server_config: "{{ seafile_data_dir }}/seafile.conf"
 
 seafile_seahub_settings: "{{ seafile_home }}/seahub_settings.py"
 
-seafile_orig_avatar_dir: "{{ seafile_install_dir }}/seahub/media/avatars"
+seafile_lib_template_dir: "{{ seafile_data_dir }}/library-template"
+seafile_seahub_media_dir: "{{ seafile_install_dir }}/seahub/media"
+seafile_orig_avatar_dir: "{{ seafile_seahub_media_dir }}/avatars"
 seafile_dest_avatar_dir: "{{ seafile_data_dir }}/avatars"
 
 seafile_default_avatar: "{{ seafile_dest_avatar_dir }}/default.png" # Used for avatar installation check
+
+seafile_mysql_port: "{{ mysql_port }}"
+seafile_mysql_ip: 127.0.0.1
+
+seafile_admin_user_lock: "{{ seafile_home }}/seahub_admin_user_created.lock"
+
+seafile_nginx_log_dir: "/var/log/nginx/{{ seafile_user }}"
 
 seafile_db_names:
     - "{{ seafile_seahub_db_name }}"

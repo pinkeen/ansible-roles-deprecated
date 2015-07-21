@@ -1,0 +1,43 @@
+- name: Create nginx log directory
+  file: 
+    path: "{{ seafile_nginx_log_dir }}"
+    owner: "nginx"
+    group: "nginx"
+    mode: 0750
+    state: directory
+
+- name: Ensure log directory
+  file: 
+    path: "{{ seafile_log_dir }}"
+    owner: "{{ seafile_user }}"
+    group: "nginx"
+    mode: 0750
+    state: directory
+
+- name: Create nginx logs symlink
+  file: 
+    src: "{{ seafile_nginx_log_dir }}"
+    dest: "{{ seafile_log_dir }}/nginx"
+    owner: "{{ seafile_user }}"
+    group: "nginx"
+    mode: 0770
+    state: link
+
+- name: Ensure directory permissions
+  file:
+    path: "{{ item }}"
+    follow: yes
+    recurse: yes
+    owner: "{{ seafile_user }}"
+    group: "nginx"
+    mode: 0750
+    state: directory    
+  with_items:
+    - "{{ seafile_seahub_media_dir }}"
+    - "{{ seafile_home }}"
+
+- name: Install nginx vhost
+  template:
+    src: nginx_host.conf
+    dest: /etc/nginx/conf.d/{{ seafile_user }}.conf
+  notify: Reload nginx

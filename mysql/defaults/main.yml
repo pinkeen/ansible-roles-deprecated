@@ -1,4 +1,5 @@
 ---
 mysql_skip_networking: false
 mysql_open_to_world: false
+mysql_port: 3306
   

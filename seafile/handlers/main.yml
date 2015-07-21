@@ -1,0 +1,22 @@
+---
+
+- name: Reload systemd service files
+  shell: systemctl daemon-reload
+
+- name: Restart seafile and seahub
+  service: name={{ item }} state=restarted
+  with_items:
+    - seafile
+    - seahub
+
+- name: Restart seahub
+  service: name=seahub state=restarted
+
+- name: Restart seafile
+  service: name=seahub state=restarted  
+  
+- name: Reload firewalld
+  shell: firewall-cmd --reload    
+
+- name: Reload nginx
+  service: name=nginx state=reloaded

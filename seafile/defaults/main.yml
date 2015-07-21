@@ -4,19 +4,24 @@ seafile_user: seafile
 seafile_version: 4.2.1
 seafile_tarball: "https://bitbucket.org/haiwen/seafile/downloads/seafile-server_{{ seafile_version }}_x86-64.tar.gz"
 
-seafile_home: "/home/{{ seafile_user }}"
+seafile_home: "/var/www/{{ seafile_user }}"
 seafile_data_directory: "{{ seafile_home }}/data"
 
 seafile_db_pass: ""
 seafile_seahub_db_name: sf_seahub
 seafile_ccnet_db_name: sf_ccnet
 seafile_seafile_db_name: sf_seafile
-
+seafile_service_url: "http://{{ seafile_server_domain }}"
+seafile_from_email: "noreply@{{ seafile_server_domain }}"
+seafile_max_upload_size: 500 #in MB
 
 seafile_data_dir: "{{ seafile_home }}/data"
 seafile_server_name: Seafile
 seafile_ccnet_port: 10001
 seafile_port: 12001
+seafile_seahub_fcgi_port: 8085
 seafile_fileserver_port: 8082
+seafile_webdav_port: 8086
+
 
 

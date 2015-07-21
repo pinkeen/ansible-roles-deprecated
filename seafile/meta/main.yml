@@ -1,3 +1,5 @@
 ---
 dependencies:
     - role: mysql
+    - role: nginx
+    - role: postfix

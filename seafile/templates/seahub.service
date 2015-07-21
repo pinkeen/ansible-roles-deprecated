@@ -1,0 +1,14 @@
+[Unit]
+Description=Seahub
+After=network.target mariadb.service seafile.service
+
+[Service]
+Type=oneshot
+ExecStart={{ seafile_latest_dir }}/seahub.sh start-fastcgi {{ seafile_seahub_fcgi_port }}
+ExecStop={{ seafile_latest_dir }}/seahub.sh stop
+RemainAfterExit=yes
+User={{ seafile_user }}
+Group=nginx
+
+[Install]
+WantedBy=multi-user.target

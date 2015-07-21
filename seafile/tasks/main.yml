@@ -4,6 +4,8 @@
     state: present
     name: "{{ seafile_user }}"
     home: "{{ seafile_home }}"
+    group: "nginx"
+    move_home: yes
 
 - name: Create  dbs
   mysql_db: 
@@ -32,6 +34,7 @@
     - python-setuptools
     - MySQL-python
     - python-pillow
+    - python-flup
 
 - name: Download tarball
   get_url:
@@ -59,74 +62,11 @@
 
 - name: Initialize seafile database
   shell: > 
-    /bin/mysql "{{ seafile_seahub_db_name }}" -u"{{ seafile_user }}" -p"{{ seafile_db_pass }}" < "{{ seafile_seahub_db_sql }}" && echo "do not remove" > "{{ seafile_home }}/seahub_schema.lock"
+    /bin/mysql "{{ seafile_seahub_db_name }}" -u"{{ seafile_user }}" -p"{{ seafile_db_pass }}" < "{{ seafile_seahub_db_sql }}" && echo "do not remove" > "{{ seafile_home }}/seahub_schema_created.lock"
   args:
-    creates: "{{ seafile_home }}/seahub_schema.lock"
+    creates: "{{ seafile_home }}/seahub_schema_created.lock"
 
-- name: Init ccnet
-  shell: >
-    {{ seafile_ccnet_init }} 
-    --config-dir {{ seafile_ccnet_config_dir }}
-    --name {{ seafile_server_name }}
-    --host {{ seafile_server_domain }}
-    --port {{ seafile_ccnet_port }}
-  args:
-    creates: "{{ seafile_ccnet_config }}"
-  sudo: yes
-  sudo_user: "{{ seafile_user }}"    
-
-- name: Configure db in ccnet ini file
-  ini_file:
-    dest: "{{ seafile_ccnet_config }}"
-    section: Database
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items:
-    - { option: "ENGINE", value: "mysql" } 
-    - { option: "HOST", value: "127.0.0.1" } 
-    - { option: "PORT", value: "3306" } 
-    - { option: "USER", value: "{{ seafile_user }}" } 
-    - { option: "PASSWD", value: "{{ seafile_db_pass }}" } 
-    - { option: "DB", value: "{{ seafile_ccnet_db_name }}" } 
-    - { option: "CONNECTION_CHARSET", value: "utf8" } 
-
-- name: Init server
-  shell: >
-    {{ seafile_server_init }} 
-    --seafile-dir {{ seafile_data_dir }}
-    --port {{ seafile_port }}
-    --fileserver-port {{ seafile_fileserver_port }}
-  args:
-    creates: "{{ seafile_server_config }}"
-  sudo: yes
-  sudo_user: "{{ seafile_user }}" 
-
-- name: Configure db in server ini file
-  ini_file:
-    dest: "{{ seafile_server_config }}"
-    section: Database
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items:
-    - { option: "type", value: "mysql" } 
-    - { option: "host", value: "127.0.0.1" } 
-    - { option: "port", value: "3306" } 
-    - { option: "user", value: "{{ seafile_user }}" } 
-    - { option: "password", value: "{{ seafile_db_pass }}" } 
-    - { option: "db_name", value: "{{ seafile_seafile_db_name }}" } 
-    - { option: "connection_charset", value: "utf8" }   
-
-- name: Configure seafile datadir in ccnet seafile.ini
-  shell: echo "{{ seafile_data_dir }}" > "{{ seafile_inifile }}"
-  sudo: yes
-  sudo_user: "{{ seafile_user }}"   
-
-- name: Install seahub config 
-  template: 
-    src: seahub_settings.py
-    dest: "{{ seafile_seahub_settings }}"
-  sudo: yes
-  sudo_user: "{{ seafile_user }}" 
+- include: config.yml
 
 - name: Copy default avatars
   shell: >
@@ -145,9 +85,53 @@
   sudo: yes
   sudo_user: "{{ seafile_user }}"  
 
-# TODO: 
-# - Open firewall ports for seafile
-# - Check how to enable WebDAV and check if it's working
-# - Configure admin user
-# - Use nginx as proxy for seahub
-# - Create and enable systemd service files
+- name: Create library template dir
+  file:
+    dest: "{{ seafile_lib_template_dir }}"
+    state: directory
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"   
+
+- name: Install logrotate config
+  template:
+    src: logrotate.conf
+    dest: "/etc/logrotate.d/{{ seafile_user }}"     
+
+- name: Install create user script    
+  template:
+    src: create_admin_user.py
+    dest: "{{ seafile_home }}/create_admin_user.py"
+    mode: 0744
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"    
+
+- name: Install service files
+  template: 
+    src: "{{ item }}"
+    dest: "/etc/systemd/system/{{ item }}"
+  with_items:
+    - seafile.service
+    - seahub.service
+  notify: 
+    - Reload systemd service files
+    - Restart seafile and seahub
+
+- name: Start and enable seafile
+  service: name=seafile state=started enabled=yes
+
+- name: Create admin user
+  shell: >
+    {{ seafile_python_path }} /bin/python {{ seafile_home }}/create_admin_user.py
+    {{ seafile_admin_email }}
+    {{ seafile_admin_password }}
+  args:
+    creates: "{{ seafile_home }}/seahub_admin_created.lock"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"     
+
+- name: Start and enable seahub
+  service: name=seahub state=started enabled=yes
+
+- include: nginx.yml
+
+

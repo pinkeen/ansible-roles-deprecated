@@ -1,0 +1,98 @@
+- name: Init ccnet
+  shell: >
+    {{ seafile_ccnet_init }} 
+    --config-dir {{ seafile_ccnet_config_dir }}
+    --name {{ seafile_server_name }}
+    --host {{ seafile_server_domain }}
+    --port {{ seafile_ccnet_port }}
+  args:
+    creates: "{{ seafile_ccnet_config }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"    
+
+- name: Configure ccnet ini file
+  ini_file:
+    dest: "{{ seafile_ccnet_config }}"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  notify: Restart seafile and seahub
+  with_items:
+    - { section: "General", option: "USER_NAME", value: "{{ seafile_server_name }}" }
+    - { section: "General", option: "NAME", value: "{{ seafile_server_name }}" }
+    - { section: "General", option: "SERVICE_URL", value: "{{ seafile_service_url }}" }
+    - { section: "Network", option: "PORT", value: "{{ seafile_ccnet_port }}" }
+    - { section: "Database", option: "ENGINE", value: "mysql" } 
+    - { section: "Database", option: "HOST", value: "{{ seafile_mysql_ip }}" } 
+    - { section: "Database", option: "PORT", value: "{{ seafile_mysql_port }}" } 
+    - { section: "Database", option: "USER", value: "{{ seafile_user }}" } 
+    - { section: "Database", option: "PASSWD", value: "{{ seafile_db_pass }}" } 
+    - { section: "Database", option: "DB", value: "{{ seafile_ccnet_db_name }}" } 
+    - { section: "Database", option: "CONNECTION_CHARSET", value: "utf8" } 
+
+- name: Init server
+  shell: >
+    {{ seafile_server_init }} 
+    --seafile-dir {{ seafile_data_dir }}
+    --port {{ seafile_port }}
+    --fileserver-port {{ seafile_fileserver_port }}
+  args:
+    creates: "{{ seafile_server_config }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}" 
+
+- name: Configure server ini file
+  ini_file:
+    dest: "{{ seafile_server_config }}"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  notify: Restart seafile and seahub
+  with_items:
+    - { section: "network", option: "port", value: "{{ seafile_port }}" }
+    - { section: "fileserver", option: "port", value: "{{ seafile_fileserver_port }}" }
+    - { section: "fileserver", option: "max_upload_size", value: "{{ seafile_max_upload_size }}" }
+    - { section: "database", option: "type", value: "mysql" } 
+    - { section: "database", option: "host", value: "{{ seafile_mysql_ip }}" } 
+    - { section: "database", option: "port", value: "{{ seafile_mysql_port }}" } 
+    - { section: "database", option: "user", value: "{{ seafile_user }}" } 
+    - { section: "database", option: "password", value: "{{ seafile_db_pass }}" } 
+    - { section: "database", option: "db_name", value: "{{ seafile_seafile_db_name }}" } 
+    - { section: "database", option: "connection_charset", value: "utf8" }   
+
+- name: Configure seafile datadir in ccnet seafile.ini
+  template:
+    src: "seafile.ini"
+    dest: "{{ seafile_inifile }}"
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"
+
+- name: Install seahub config 
+  template: 
+    src: seahub_settings.py
+    dest: "{{ seafile_seahub_settings }}"
+  notify: Restart seahub
+  sudo: yes
+  sudo_user: "{{ seafile_user }}" 
+
+- name: Ensure config dir
+  file:
+    path: "{{ seafile_config_dir }}"  
+    state: directory
+  sudo: yes
+  sudo_user: "{{ seafile_user }}" 
+
+- name: Configure webdav ini
+  ini_file:
+    dest: "{{ seafile_seafdav_config }}"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  notify: Restart seafile and seahub
+  with_items:
+    - { section: "WEBDAV", option: "enabled", value: "true" }
+    - { section: "WEBDAV", option: "port", value: "{{ seafile_webdav_port }}" }
+    - { section: "WEBDAV", option: "share_name", value: "/seafdav" }
+    - { section: "WEBDAV", option: "fastcgi", value: "true" }
+  notify: Restart seafile
+    
