@@ -1,0 +1,6 @@
+---
+- name: Reconfigure gitlab
+  shell: gitlab-ctl reconfigure
+
+- name: Reload nginx
+  service: name=nginx state=reloaded  

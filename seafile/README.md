@@ -26,9 +26,17 @@ This role uses the mysql role, if you disable mysql networking or then seafile w
 ## Interesting vars
 - `seafile_max_upload_size` - max upload size (in MB)
 
+### Customizations
+- `seafile_css` - path to custom css
+- `seafile_logo` - path to custom logo
+- `seafile_logo_width`
+- `seafile_logo_height`
+- `seafile_site_title`
+- `seafile_site_name`
+
 
 ## TODO
 - memcached
 - LDAP users
 - some kind of upgrade role
-- more configuration options (vars)
+- https

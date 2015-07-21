@@ -23,5 +23,10 @@ seafile_seahub_fcgi_port: 8085
 seafile_fileserver_port: 8082
 seafile_webdav_port: 8086
 
+# CUSTOMIZATION
+seafile_logo_width: 149
+seafile_logo_height: 32
+seafile_site_title: Seafile
+seafile_site_name: "{{ seafile_server_domain }}"
 
 

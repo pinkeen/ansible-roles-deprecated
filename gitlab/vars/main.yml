@@ -1,0 +1,4 @@
+---
+gitlab_repo_url: https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/config_file.repo?os=centos&dist=7
+gitlab_gpg_key_url: https://packages.gitlab.com/gpg.key
+gitlab_config: /etc/gitlab/gitlab.rb

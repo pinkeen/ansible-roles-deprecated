@@ -8,6 +8,19 @@ EMAIL_PORT = '25'
 DEFAULT_FROM_EMAIL = '{{ seafile_from_email }}'
 SERVER_EMAIL = '{{ seafile_from_email }}'
 
+SITE_NAME = '{{ seafile_site_name }}'
+SITE_TITLE = '{{ seafile_site_title }}'
+
+{% if seafile_logo is defined %}
+LOGO_PATH = 'custom/logo.png'
+LOGO_WIDTH = {{ seafile_logo_width }}
+LOGO_HEIGHT = {{ seafile_logo_height }}
+{% endif %}
+
+{% if seafile_css is defined %}
+BRANDING_CSS = 'custom/styles.css'
+{% endif %}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',

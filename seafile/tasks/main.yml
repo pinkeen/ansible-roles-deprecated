@@ -92,6 +92,8 @@
   sudo: yes
   sudo_user: "{{ seafile_user }}"   
 
+- include: customization.yml
+
 - name: Install logrotate config
   template:
     src: logrotate.conf

@@ -1,0 +1,56 @@
+---
+- name: Install repo
+  get_url:
+    url: "{{ gitlab_repo_url }}"
+    dest: /etc/yum.repos.d/gitlab_gitlab-ce.repo
+  register: repodownloaded
+
+- name: Regenerate yum cache
+  shell: yum -q makecache -y --disablerepo='*' --enablerepo='gitlab_gitlab-ce'
+  when: repodownloaded.changed
+
+- name: Install gitlab gpg repo key
+  rpm_key: state=present key={{ gitlab_gpg_key_url }}
+
+- name: Install gitlab
+  yum: 
+    name: gitlab-ce 
+    state: installed
+    disable_gpg_check: yes
+
+- name: Add nginx to gitlab www group
+  user:
+    name: nginx
+    groups: gitlab-www
+    append: yes    
+
+- name: Create nginx log directory
+  file: 
+    path: "/var/log/nginx/gitlab"
+    owner: "nginx"
+    group: "nginx"
+    mode: 0750
+    state: directory
+
+- name: Install nginx vhost
+  template:
+    src: nginx_host.conf
+    dest: /etc/nginx/conf.d/gitlab.conf
+  notify: Reload nginx    
+
+- name: Configure gitlab
+  lineinfile:
+    dest: "{{ gitlab_config }}"
+    state: present
+    create: yes
+    line: "{{ item.line }}"
+    regexp: "{{ item.regex }}"
+  with_items:
+    - regex: "nginx\\['enable'\\]"
+      line: "nginx['enable'] = false "
+    - regex: "web_server\\['external_users'\\]"
+      line: "web_server['external_users'] = ['nginx']"    
+    - regex: "external_url"
+      line: "external_url '{{ gitlab_external_url }}'"
+  notify: Reconfigure gitlab
+

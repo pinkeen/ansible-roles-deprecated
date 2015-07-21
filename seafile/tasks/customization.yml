@@ -1,0 +1,34 @@
+---
+- name: Create customization assets directory
+  file:
+    path: "{{ seafile_custom_dir }}"
+    state: directory
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"          
+
+- name: Create customization assets symlink
+  file:
+    src: "{{ seafile_custom_dir }}"
+    dest: "{{ seafile_seahub_media_dir }}/custom"
+    state: link
+    force: yes
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"      
+
+- name: Copy custom logo
+  copy:
+    src: "{{ seafile_logo }}"  
+    dest: "{{ seafile_custom_dir }}/logo.png"
+  when: seafile_logo is defined
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"        
+
+- name: Copy custom css
+  copy:
+    src: "{{ seafile_css }}"  
+    dest: "{{ seafile_custom_dir }}/styles.css"
+  when: seafile_css is defined
+  sudo: yes
+  sudo_user: "{{ seafile_user }}"
+
+  

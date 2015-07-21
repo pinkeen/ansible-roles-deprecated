@@ -27,6 +27,8 @@ seafile_seahub_media_dir: "{{ seafile_install_dir }}/seahub/media"
 seafile_orig_avatar_dir: "{{ seafile_seahub_media_dir }}/avatars"
 seafile_dest_avatar_dir: "{{ seafile_data_dir }}/avatars"
 
+seafile_custom_dir: "{{ seafile_data_dir }}/custom"
+
 seafile_default_avatar: "{{ seafile_dest_avatar_dir }}/default.png" # Used for avatar installation check
 
 seafile_mysql_port: "{{ mysql_port }}"
