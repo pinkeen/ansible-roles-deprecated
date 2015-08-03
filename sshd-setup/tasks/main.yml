@@ -6,6 +6,7 @@
     regexp: "#?\\s*{{ item.regexp|default(item) }}"
     state: present
   with_items:
+    - "PasswordAuthentication yes"
     - "RSAAuthentication yes"
     - "PubkeyAuthentication yes"
     - "PermitRootLogin yes"
