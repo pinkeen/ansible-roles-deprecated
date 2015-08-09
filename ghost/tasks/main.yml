@@ -15,6 +15,7 @@
     - npm
     - nodejs    
     - sqlite
+    - unzip
 
 - name: Download package
   get_url:
