@@ -4,15 +4,32 @@ ZSH_THEME="blinks"
 CASE_SENSITIVE="true"
 DISABLE_AUTO_UPDATE="true"
 COMPLETION_WAITING_DOTS="false"
+DISABLE_CORRECTION="true"
 DISABLE_UNTRACKED_FILES_DIRTY="true"
 
 plugins=(git colorize symfony2 npm bower composer cp)
 
 source $ZSH/oh-my-zsh.sh
 
+if [[ "${terminfo[kpp]}" != "" ]]; then
+  bindkey "${terminfo[kpp]}" up-line-or-search       # [PageUp] - fuzzy find history forward
+fi
+if [[ "${terminfo[knp]}" != "" ]]; then
+  bindkey "${terminfo[knp]}" down-line-or-search     # [PageDown] - fuzzy find history backward
+fi
+
+if [[ "${terminfo[kcuu1]}" != "" ]]; then
+  bindkey "${terminfo[kcuu1]}" up-line-or-history      # start typing + [Up-Arrow] - Up a line of history
+fi
+if [[ "${terminfo[kcud1]}" != "" ]]; then
+  bindkey "${terminfo[kcud1]}" down-line-or-history    # start typing + [Down-Arrow] - Down a line of history
+fi
+
 export PATH="/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 export LANG=en_US.UTF-8
 export EDITOR="nano"
+
+unsetopt share_history
 
 alias su='sudo su'
 

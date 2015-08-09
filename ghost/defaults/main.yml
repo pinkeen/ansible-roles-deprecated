@@ -1,0 +1,27 @@
+---
+ghost_user: ghost
+ghost_home: "/var/www/{{ ghost_user }}"
+ghost_package_url: https://ghost.org/zip/ghost-0.6.4.zip
+ghost_port: 2368
+
+# Some free themes to get you started...
+ghost_themes: 
+    - https://github.com/DanielTamkin/starmap
+    - https://github.com/DeviaVir/ghost-interphase-theme
+    - https://github.com/godofredoninja/GodoFredo-Blog
+    - https://github.com/fabienwang/Ghost-Flat
+    - https://github.com/wbkd/ghost-wbkd
+    - https://github.com/belen-albeza/breathe-theme
+    - https://github.com/ireade/openwriter
+    - https://github.com/jroakes/ghost-material
+    - https://github.com/Zazama/GoClean
+    - https://github.com/Zazama/TrueStyle
+    - https://github.com/zohf/8-days-theme
+    - https://github.com/zutrinken/attila
+    - https://github.com/dcefram/stupendous
+    - https://github.com/dongri/Coder
+    - https://github.com/ghzmdr/material-showcase-ghost-theme
+    - https://github.com/MrJuliuss/plainly
+    - https://github.com/Kikobeats/uno-zen
+    - https://github.com/viruzx/Optimium-Ghost-Theme
+    - https://github.com/germannencinas/Gunter

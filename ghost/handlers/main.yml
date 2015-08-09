@@ -1,0 +1,9 @@
+---
+- name: Reload nginx
+  service: name=nginx state=reloaded
+
+- name: Restart ghost
+  service: name=ghost state=restarted 
+
+- name: Reload systemd service files
+  shell: systemctl daemon-reload  

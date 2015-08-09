@@ -1,0 +1,17 @@
+[Unit]
+Description=Runs ghost npm app
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/node {{ ghost_home }}/index.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier={{ ghost_user }}
+User={{ ghost_user }}
+Group=nginx
+Environment=NODE_ENV=production 
+WorkingDirectory={{ ghost_home }}
+
+[Install]
+WantedBy=multi-user.target

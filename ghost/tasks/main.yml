@@ -1,0 +1,83 @@
+---
+- name: Create user
+  user:
+    state: present
+    name: "{{ ghost_user }}"
+    home: "{{ ghost_home }}"
+    group: "nginx"
+    move_home: yes
+
+- name: Install dependencies
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - npm
+    - nodejs    
+    - sqlite
+
+- name: Download package
+  get_url:
+    url: "{{ ghost_package_url }}"
+    dest: "{{ ghost_home }}/ghost.zip"
+  sudo: yes
+  sudo_user: "{{ ghost_user }}"    
+
+- name: Unpack ghost
+  unarchive:
+    src: "{{ ghost_home }}/ghost.zip"
+    dest: "{{ ghost_home }}"
+    copy: no
+    creates: "{{ ghost_home }}/package.json"
+  sudo: yes
+  sudo_user: "{{ ghost_user }}"    
+
+- name: Install npm dependencies
+  command: npm install --production
+  args:
+    chdir: "{{ ghost_home }}"
+    creates: "{{ ghost_home }}/node_modules"
+  sudo: yes
+  sudo_user: "{{ ghost_user }}"
+
+- name: Install service file
+  template: 
+    src: "ghost.service"
+    dest: "/etc/systemd/system/ghost.service"
+  notify: 
+    - Reload systemd service files
+    - Restart ghost
+
+- name: Install config
+  template:
+    src: config.js
+    dest: "{{ ghost_home}}/config.js"
+  sudo: yes
+  sudo_user: "{{ ghost_user }}"    
+  notify: Restart ghost  
+
+- name: Create nginx log directory
+  file: 
+    path: "{{ ghost_nginx_log_dir }}"
+    owner: "nginx"
+    group: "nginx"
+    mode: 0750
+    state: directory
+
+- name: Install nginx vhost
+  template:
+    src: nginx_host.conf
+    dest: /etc/nginx/conf.d/{{ ghost_user }}.conf
+  notify: Reload nginx  
+
+- name: Install ghost themes
+  git: 
+    repo: "{{ item }}"
+    dest: "{{ ghost_home }}/content/themes/{{ item|basename }}"
+  sudo: yes
+  sudo_user: "{{ ghost_user }}"    
+  notify: Restart ghost      
+  with_items: ghost_themes
+
+- name: Start & enable ghost
+  service: name=ghost state=started enabled=yes  

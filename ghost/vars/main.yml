@@ -1,0 +1,2 @@
+---
+ghost_nginx_log_dir: "/var/log/nginx/{{ ghost_user }}"
