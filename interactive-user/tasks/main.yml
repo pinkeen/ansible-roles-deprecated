@@ -18,7 +18,7 @@
     generate_ssh_key: yes
 
 - name: Clone oh-my-zsh repo
-  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest="~{{ username }}/.oh-my-zsh" update=no
+  git: repo=https://github.com/robbyrussell/oh-my-zsh.git dest="~{{ username }}/.oh-my-zsh" update=yes force=yes
 
 - name: Copy .zshrc
   copy: src=zshrc dest="~{{ username }}/.zshrc" owner="{{ username }}"
