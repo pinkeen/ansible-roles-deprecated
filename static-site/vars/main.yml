@@ -1,0 +1,5 @@
+---
+nginx_web_dir: "/var/www"
+nginx_log_dir: "/var/log/nginx"
+site_log_dir: "{{ nginx_log_dir }}/{{ site_host }}"
+site_web_dir: "{{ nginx_web_dir }}/{{ site_host }}"

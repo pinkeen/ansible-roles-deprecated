@@ -1,0 +1,35 @@
+{% if site_use_ssl %}
+server {
+  listen 80;
+  server_name {{ site_host }};
+
+  rewrite ^ https://$server_name$request_uri? permanent;
+  add_header Strict-Transport-Security "max-age=31536000; includeSubdomains";
+}
+{% endif %}
+
+server {
+{% if site_use_ssl %}
+  listen 443 ssl;
+  ssl_certificate {{ site_ssl_cert_path }};
+  ssl_certificate_key {{ site_ssl_key_path }};
+
+  keepalive_timeout 70;
+{% else %}
+  listen 80;
+{% endif %}
+
+    server_name {{ site_host }};
+    
+    access_log {{ site_log_dir }}/access.log;
+    error_log {{ site_log_dir }}/error.log;
+    
+    root {{ site_web_dir }};
+    
+    include common;
+    include media;
+
+    location / {
+        index index.html;
+    }
+}

@@ -1,2 +1,3 @@
 ---
-gitlab_external_url: "http://{{ gitlab_domain }}"
+gitlab_use_ssl: "{{ gitlab_ssl_cert_path is defined and gitlab_ssl_key_path is defined }}"
+gitlab_external_url: "http{% if gitlab_use_ssl %}s{% endif %}://{{ gitlab_domain }}"

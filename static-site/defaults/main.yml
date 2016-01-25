@@ -1,0 +1,3 @@
+---
+site_use_ssl: "{{ site_ssl_cert_path is defined and site_ssl_key_path is defined }}"
+
